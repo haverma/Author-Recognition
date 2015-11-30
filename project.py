@@ -8,6 +8,7 @@ import csv
 import operator
 import re
 from sets import Set
+from collections import OrderedDict
 
 
 
@@ -83,19 +84,49 @@ def load_topic_words(topic_file, n):
     fp.close()
     return list_words
 
+def get_vocab_dict(list_words):
+    vocab_list = sorted(list_words)
+    vocab_index = {}
+    for i in range(1,(len(vocab_list) + 1)):
+        vocab_index[vocab_list[i-1]] = i
+    return vocab_index
 
-            
 
+def generate_count_dict(excerpt,vocab_dict):
+    excerpt_count_dict = defaultdict(int)
+    words_excerpt = word_tokenize(excerpt.decode('utf8'))
+    for word in words_excerpt:
+        excerpt_count_dict[word]+=1
+    dict_index_count = {}
+    for word in excerpt_count_dict:
+        if word in vocab_dict:
+            dict_index_count[vocab_dict[word]] = excerpt_count_dict[word]
+    return dict_index_count
 
 
 
 
 
 if __name__=="__main__":
-    #data = parse_input("data/project_articles_train")
+    data = parse_input("data/project_articles_train")
     #get_positive_examples(data, "train_positive")
     topic_words = load_topic_words("topic_words.ts", 1000)
-    fp = open("topic_top_1000.txt","w+")
-    for word in topic_words:
-        fp.write(word + "\n")
-    fp.close()
+    vocab_dict = get_vocab_dict(topic_words)
+    print vocab_dict
+    '''list_label_features = []
+    for tuple_entry in data:
+        list_label_features.append((tuple_entry[1], generate_count_dict(tuple_entry[0], vocab_dict)))
+    svm_file = open("file_svm_train.txt", "w+")
+    for instance in list_label_features:
+        svm_file.write(str(instance[0]) + " ")
+        od = OrderedDict(sorted(instance[1].items()))
+        for key in od:
+            svm_file.write(str(key) + ":" + str(od[key]) + " ")
+        svm_file.write("\n")'''
+
+
+
+
+
+    
+    
