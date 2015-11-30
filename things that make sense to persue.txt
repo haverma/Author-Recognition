@@ -1,0 +1,9 @@
+looking at sentence leangth and word leangth,
+looking at word choice, (ie. distribution comparisons, can do KL stuff)
+-preprossing by clustering, similarly instead of raw counts excerpt likelyhood as selector
+looking at letterwise ngrams,
+we could do syntactical parsing for sentence structures
+
+we use different flatteners
+your parser isn't the word parser, so it isn't handling punctuation?
+how is split being used in load_topic_words?
