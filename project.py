@@ -10,6 +10,8 @@ import re
 from sets import Set
 from svmutil import *
 from collections import OrderedDict
+import linecache
+import random
 
 
 
@@ -113,10 +115,29 @@ def train_test_model(train_datafile, test_datafile):
 
 
 
+def train_crossvalidation(train_datafile, testlinenos):
+    train_lines = set(range(1,12114))
+    train_lines.difference_update(testlinenos)
+    fp_test = open("svm_test.txt","w+")
+    fp_train = open("svm_train.txt","w+")
+    for line in testlinenos:
+	cur_line = linecache.getline(train_datafile, line)
+        fp_test.write(cur_line)
+    for line in train_lines:
+        cur_line = linecache.getline(train_datafile, line)
+ 	fp_train.write(cur_line)
+    fp_train.close()
+    fp_test.close()
+    p_labs, p_acc, p_vals = train_test_model("svm_train.txt","svm_test.txt")
+    print p_acc
+	    
+	    
+
+
 if __name__=="__main__":
-    '''data = parse_input("data/project_articles_train")
+    #data = parse_input("data/project_articles_train")
     #get_positive_examples(data, "train_positive")
-    topic_words = load_topic_words("topic_words.ts", 1000)
+    '''topic_words = load_topic_words("topic_words.ts", 1000)
     vocab_dict = get_vocab_dict(topic_words)
     list_label_features = []
     for tuple_entry in data:
@@ -127,10 +148,10 @@ if __name__=="__main__":
         od = OrderedDict(sorted(instance[1].items()))
         for key in od:
             svm_file.write(str(key) + ":" + str(od[key]) + " ")
-        svm_file.write("\n")
-	data_test = parse_input("data/project_articles_test")
+        svm_file.write("\n")'''
+	#data_test = parse_input("data/project_articles_test")
     #get_positive_examples(data, "train_positive")
-    list_label_features_test = []
+    '''list_label_features_test = []
     for tuple_entry in data_test:
         list_label_features_test.append((tuple_entry[1], generate_count_dict(tuple_entry[0], vocab_dict)))
     svm_file_test = open("file_svm_test.txt", "w+")
@@ -140,7 +161,19 @@ if __name__=="__main__":
         for key in od:
             svm_file_test.write(str(key) + ":" + str(od[key]) + " ")
         svm_file_test.write("\n")'''
-    print train_test_model("file_svm_train.txt", "file_svm_test.txt")
+    #print train_test_model("file_svm_train.txt", "file_svm_test.txt")
+    lines_tested = set()
+    left_set = set(range(1,12114))
+    while(True):
+        if len(left_set) < 1000:
+	    train_crossvalidation("file_svm_train.txt", left_set)
+	    break
+	else:
+	    current_set = set(random.sample(list(left_set), 1000))
+            lines_tested.union(current_set)
+	    left_set.difference_update(current_set)
+	    train_crossvalidation("file_svm_train.txt", current_set)
+
 	
 
 
