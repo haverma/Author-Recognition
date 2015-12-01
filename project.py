@@ -8,6 +8,7 @@ import csv
 import operator
 import re
 from sets import Set
+from svmutil import *
 from collections import OrderedDict
 
 
@@ -103,17 +104,21 @@ def generate_count_dict(excerpt,vocab_dict):
             dict_index_count[vocab_dict[word]] = excerpt_count_dict[word]
     return dict_index_count
 
-
+def train_test_model(train_datafile, test_datafile):
+        y,x = svm_read_problem(train_datafile)
+        test_y, test_x = svm_read_problem(test_datafile)
+        model_train = svm_train(y,x, '-t 0 -e .01 -m 1000 -h 0')
+        p_labs, p_acc, p_vals = svm_predict(test_y, test_x, model_train)
+        return p_labs, p_acc, p_vals
 
 
 
 if __name__=="__main__":
-    data = parse_input("data/project_articles_train")
+    '''data = parse_input("data/project_articles_train")
     #get_positive_examples(data, "train_positive")
     topic_words = load_topic_words("topic_words.ts", 1000)
     vocab_dict = get_vocab_dict(topic_words)
-    print vocab_dict
-    '''list_label_features = []
+    list_label_features = []
     for tuple_entry in data:
         list_label_features.append((tuple_entry[1], generate_count_dict(tuple_entry[0], vocab_dict)))
     svm_file = open("file_svm_train.txt", "w+")
@@ -122,7 +127,21 @@ if __name__=="__main__":
         od = OrderedDict(sorted(instance[1].items()))
         for key in od:
             svm_file.write(str(key) + ":" + str(od[key]) + " ")
-        svm_file.write("\n")'''
+        svm_file.write("\n")
+	data_test = parse_input("data/project_articles_test")
+    #get_positive_examples(data, "train_positive")
+    list_label_features_test = []
+    for tuple_entry in data_test:
+        list_label_features_test.append((tuple_entry[1], generate_count_dict(tuple_entry[0], vocab_dict)))
+    svm_file_test = open("file_svm_test.txt", "w+")
+    for instance in list_label_features_test:
+        svm_file_test.write(str(instance[0]) + " ")
+        od = OrderedDict(sorted(instance[1].items()))
+        for key in od:
+            svm_file_test.write(str(key) + ":" + str(od[key]) + " ")
+        svm_file_test.write("\n")'''
+    print train_test_model("file_svm_train.txt", "file_svm_test.txt")
+	
 
 
 
