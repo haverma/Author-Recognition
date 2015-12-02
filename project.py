@@ -8,8 +8,7 @@ import csv
 import operator
 import re
 from sets import Set
-from svmutil import *
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 import linecache
 import random
 
@@ -34,7 +33,7 @@ def get_fullpath_files(directory):
     list_files=[os.path.join(directory,entry) for entry in list_entries if os.path.isfile(os.path.join(directory,entry))]
     return list_files
 
-'''def parse_input(train_file):
+def parse_input_mft(train_file):
     fp = open(train_file,"r")
     list_excerpts_label = []
     for line in fp:
@@ -51,7 +50,11 @@ def get_fullpath_files(directory):
     word_dictionary = defaultdict(int)
     for token in excerpts_list_words:
         word_dictionary[token]+=1
-    return list_excerpts_label, list_excerpts, word_dictionary'''
+    counter_words = Counter(word_dictionary)
+    list_words = []
+    for k,v in counter_words.most_common(1000):
+        list_words.append(k)
+    return list_excerpts_label, list_excerpts, list_words
 
 
 def parse_input(train_file):
@@ -135,20 +138,22 @@ def train_crossvalidation(train_datafile, testlinenos):
 
 
 if __name__=="__main__":
-    #data = parse_input("data/project_articles_train")
+    data = parse_input("data/project_articles_train")
     #get_positive_examples(data, "train_positive")
-    '''topic_words = load_topic_words("topic_words.ts", 1000)
+    #topic_words = load_topic_words("topic_words.ts", 1000)
+    list_dummy,list_dummy1,topic_words = parse_input_mft("data/project_articles_train")
     vocab_dict = get_vocab_dict(topic_words)
+    print topic_words
     list_label_features = []
     for tuple_entry in data:
         list_label_features.append((tuple_entry[1], generate_count_dict(tuple_entry[0], vocab_dict)))
-    svm_file = open("file_svm_train.txt", "w+")
+    svm_file = open("file_svm_train_one.txt", "w+")
     for instance in list_label_features:
         svm_file.write(str(instance[0]) + " ")
         od = OrderedDict(sorted(instance[1].items()))
         for key in od:
             svm_file.write(str(key) + ":" + str(od[key]) + " ")
-        svm_file.write("\n")'''
+        svm_file.write("\n")
 	#data_test = parse_input("data/project_articles_test")
     #get_positive_examples(data, "train_positive")
     '''list_label_features_test = []
@@ -162,7 +167,7 @@ if __name__=="__main__":
             svm_file_test.write(str(key) + ":" + str(od[key]) + " ")
         svm_file_test.write("\n")'''
     #print train_test_model("file_svm_train.txt", "file_svm_test.txt")
-    lines_tested = set()
+    '''lines_tested = set()
     left_set = set(range(1,12114))
     while(True):
         if len(left_set) < 1000:
@@ -172,7 +177,7 @@ if __name__=="__main__":
 	    current_set = set(random.sample(list(left_set), 1000))
             lines_tested.union(current_set)
 	    left_set.difference_update(current_set)
-	    train_crossvalidation("file_svm_train.txt", current_set)
+	    train_crossvalidation("file_svm_train.txt", current_set)'''
 
 	
 
