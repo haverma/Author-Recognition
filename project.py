@@ -1,6 +1,6 @@
 from __future__ import division
 from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk import StanfordNERTagger
+from nltk import StanfordPOSTagger
 from collections import defaultdict
 import math
 import subprocess
@@ -15,7 +15,7 @@ import random
 
 def postagstring(inputtotag):
     arrayrepresentation = word_tokenize(inputtotag)
-    st = StanfordNERTagger('english.all.3class.distsim.crf.ser.gz')
+    st = StanfordPOSTagger('english-bidirectional-distsim.tagger') 
     posarrayform = st.tag(arrayrepresentation)
     return posarrayform
 
