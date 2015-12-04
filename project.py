@@ -1,5 +1,6 @@
 from __future__ import division
 from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk import StanfordNERTagger
 from collections import defaultdict
 import math
 import subprocess
@@ -12,8 +13,28 @@ from collections import OrderedDict, Counter
 import linecache
 import random
 
+def postagstring(inputtotag):
+    arrayrepresentation = word_tokenize(inputtotag)
+    st = StanfordNERTagger('english.all.3class.distsim.crf.ser.gz')
+    posarrayform = st.tag(arrayrepresentation)
+    return posarrayform
 
+def writetocod(outfile, posarray, intex):
+    for pos in [wordpair[0] for wordpair in posarray]:
+        outfile.write(pos)
+        outfile.write(" ")
+    outfile.write('\t ' + intex + '\n')
 
+def postagdocument(inputdocument, outfile):
+    outputfile = open(outfile, 'w')
+    f = open(filepath, 'r')
+    arrayofexcerpts = f.readlines()
+    f.close()
+    for i in range (0, len(arrayofexcerpts)):
+        temp = arrayofexcerpts[i].rsplit('\t',1)
+        posarray = postagstring(temp[0])
+        writetodoc(outputfile, posarray, temp[1])
+    outputfile.close()
 
 
 def flatten(listoflists):
