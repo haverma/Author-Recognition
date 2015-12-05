@@ -98,6 +98,17 @@ def get_vocab_dict(list_words):
     return vocab_index
 
 
+def generate_test_dict(excerpt,vocab_dict):
+    excerpt_count_dict = defaultdict(int)
+    words_excerpt = word_tokenize(excerpt.decode('utf8'))
+    for word in words_excerpt:
+        excerpt_count_dict[word]+=1
+    dict_index_count = {}
+    for word in excerpt_count_dict:
+        if word in vocab_dict:
+            dict_index_count[vocab_dict[word]] =  excerpt_count_dict[word]/len(excerpt)
+    return dict_index_count
+
 def generate_count_dict(excerpt,vocab_dict):
     excerpt_count_dict = defaultdict(int)
     words_excerpt = word_tokenize(excerpt.decode('utf8'))
@@ -143,41 +154,35 @@ if __name__=="__main__":
     #topic_words = load_topic_words("topic_words.ts", 1000)
     list_dummy,list_dummy1,topic_words = parse_input_mft("data/project_articles_train")
     vocab_dict = get_vocab_dict(topic_words)
-    print topic_words
     list_label_features = []
     for tuple_entry in data:
-        list_label_features.append((tuple_entry[1], generate_count_dict(tuple_entry[0], vocab_dict)))
-    svm_file = open("file_svm_train_one.txt", "w+")
+        list_label_features.append((tuple_entry[1], generate_test_dict(tuple_entry[0], vocab_dict)))
+    svm_file = open("file_svm_train_two.txt", "w+")
     for instance in list_label_features:
         svm_file.write(str(instance[0]) + " ")
         od = OrderedDict(sorted(instance[1].items()))
         for key in od:
-            svm_file.write(str(key) + ":" + str(od[key]) + " ")
+            svm_file.write(str(key) + ":" + "{:.7f}".format(od[key])  + " ")
         svm_file.write("\n")
 	#data_test = parse_input("data/project_articles_test")
     #get_positive_examples(data, "train_positive")
-    '''list_label_features_test = []
-    for tuple_entry in data_test:
-        list_label_features_test.append((tuple_entry[1], generate_count_dict(tuple_entry[0], vocab_dict)))
-    svm_file_test = open("file_svm_test.txt", "w+")
-    for instance in list_label_features_test:
-        svm_file_test.write(str(instance[0]) + " ")
-        od = OrderedDict(sorted(instance[1].items()))
-        for key in od:
-            svm_file_test.write(str(key) + ":" + str(od[key]) + " ")
-        svm_file_test.write("\n")'''
     #print train_test_model("file_svm_train.txt", "file_svm_test.txt")
     '''lines_tested = set()
     left_set = set(range(1,12114))
+    total_acc = 0
+    counter = 0
     while(True):
         if len(left_set) < 1000:
-	    train_crossvalidation("file_svm_train.txt", left_set)
-	    break
-	else:
-	    current_set = set(random.sample(list(left_set), 1000))
+            counter+=1
+        total_acc+=train_crossvalidation("file_svm_train_one.txt", left_set)[0]
+        break
+    else:
+            counter+=1
+        current_set = set(random.sample(list(left_set), 1000))
             lines_tested.union(current_set)
-	    left_set.difference_update(current_set)
-	    train_crossvalidation("file_svm_train.txt", current_set)'''
+        left_set.difference_update(current_set)
+        total_acc+=train_crossvalidation("file_svm_train_one.txt", current_set)[0]
+    print total_acc/counter'''
 
 	
 
