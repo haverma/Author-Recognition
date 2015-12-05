@@ -1,5 +1,6 @@
 from __future__ import division
 from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk import StanfordPOSTagger
 from collections import defaultdict
 import math
 import subprocess
@@ -144,11 +145,42 @@ def train_crossvalidation(train_datafile, testlinenos):
     fp_test.close()
     p_labs, p_acc, p_vals = train_test_model("svm_train.txt","svm_test.txt")
     print p_acc
-	    
-	    
 
+
+def postagstring(inputtotag, st):
+    arrayrepresentation = word_tokenize(inputtotag)
+    posarrayform = st.tag(arrayrepresentation)
+    return posarrayform
+
+def writetodoc(outfile, posarray, intex):
+    trueposarray = [wordpair[1] for wordpair in posarray]
+    for pos in trueposarray:
+        outfile.write(pos)
+        outfile.write(" ")
+    if intex > -1:
+        outfile.write('\t ' + intex)
+    outfile.write('\n')
+
+def postagdocument(inputdocument, outfile):
+    st = StanfordPOSTagger('english-bidirectional-distsim.tagger') 
+    outputfile = open(outfile, 'w')
+    f = open(inputdocument, 'r')
+    arrayofexcerpts = f.readlines()
+    f.close()
+    for i in range (0, len(arrayofexcerpts)):
+        # temp = arrayofexcerpts[i].rsplit('\t',1)
+        posarray = postagstring(arrayofexcerpts[i].decode('utf8'), st)
+        # print posarray[0][1]
+        # temp.append("")
+        # temp.append("")
+        writetodoc(outputfile, posarray, -1)
+    outputfile.close()
+
+
+	    
 
 if __name__=="__main__":
+    postagdocument("train_positive", "pos_positive")
     data = parse_input("data/project_articles_train")
     #get_positive_examples(data, "train_positive")
     #topic_words = load_topic_words("topic_words.ts", 1000)
