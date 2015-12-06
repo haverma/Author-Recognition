@@ -75,6 +75,15 @@ def get_positive_examples(list_excerpts_label,outfile):
     fp.close()
 
 
+def get_negative_examples(list_excerpts_label,outfile):
+    fp = open(outfile,"w+")
+    for excerpt_label in list_excerpts_label:
+        if(excerpt_label[1] == 0):
+            fp.write(excerpt_label[0]+ "\n")
+    fp.close()
+
+
+
 def load_topic_words(topic_file, n):
     fp = open(topic_file,'r')
     list_tuples = []
@@ -180,11 +189,13 @@ def postagdocument(inputdocument, outfile):
 	    
 
 if __name__=="__main__":
-    postagdocument("train_positive", "pos_positive")
-    data = parse_input("data/project_articles_train")
+    java_path = "C:/Program Files/Java/jdk1.8.0_65/bin/java.exe"
+    os.environ['JAVAHOME'] = java_path
+    postagdocument("train_negative", "pos_negative")
+    #data = parse_input("data/project_articles_train")
     #get_positive_examples(data, "train_positive")
     #topic_words = load_topic_words("topic_words.ts", 1000)
-    list_dummy,list_dummy1,topic_words = parse_input_mft("data/project_articles_train")
+    '''list_dummy,list_dummy1,topic_words = parse_input_mft("data/project_articles_train")
     vocab_dict = get_vocab_dict(topic_words)
     list_label_features = []
     for tuple_entry in data:
@@ -195,9 +206,10 @@ if __name__=="__main__":
         od = OrderedDict(sorted(instance[1].items()))
         for key in od:
             svm_file.write(str(key) + ":" + "{:.7f}".format(od[key])  + " ")
-        svm_file.write("\n")
+        svm_file.write("\n")'''
 	#data_test = parse_input("data/project_articles_test")
     #get_positive_examples(data, "train_positive")
+    #get_negative_examples(data, "train_negative")
     #print train_test_model("file_svm_train.txt", "file_svm_test.txt")
     '''lines_tested = set()
     left_set = set(range(1,12114))
