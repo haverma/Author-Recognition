@@ -201,13 +201,13 @@ def postagdocument(inputdocument, outfile):
 	    
 
 if __name__=="__main__":
-    # ngrams = ngram_tokenize(3,"hello, my name is Jeffrey. I very much like this class, but sometimes it doesn't seem very much fun. What should I do about it? do you have an opinion?")
-    # for ngram in ngrams:
-    #     print(ngram)
+    ngrams = ngram_tokenize(3,"hello, my name is Jeffrey. I very much like this class, but sometimes it doesn't seem very much fun. What should I do about it? do you have an opinion?")
+    for ngram in ngrams:
+        print(ngram)
 
-    java_path = "C:/Program Files/Java/jdk1.8.0_65/bin/java.exe"
-    os.environ['JAVAHOME'] = java_path
-    postagdocument("train_negative", "pos_negative")
+    # java_path = "C:/Program Files/Java/jdk1.8.0_65/bin/java.exe"
+    # os.environ['JAVAHOME'] = java_path
+    # postagdocument("train_negative", "pos_negative")
 
     #data = parse_input("data/project_articles_train")
     #get_positive_examples(data, "train_positive")

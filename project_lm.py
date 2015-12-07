@@ -54,7 +54,7 @@ def parse_input_mft(train_file):
         word_dictionary[token]+=1
     counter_words = Counter(word_dictionary)
     list_words = []
-    for k,v in counter_words.most_common(1000):
+    for k,v in counter_words.most_common(1200):
         list_words.append(k)
     return list_excerpts_label, list_excerpts, list_words
 
@@ -149,7 +149,7 @@ def train_test_model(train_datafile, test_datafile):
 def train_test_model_final(train_datafile, test_datafile):
         y,x = svm_read_problem(train_datafile)
         test_y, test_x = svm_read_problem(test_datafile)
-        model_train = svm_train(y,x, '-t 0 -e .01 -m 1000 -h 0')
+        model_train = svm_train(y,x, '-t 0 -c 40.0 -e .01 -m 1000 -h 0')
         p_labs, p_acc, p_vals = svm_predict([0]*len(test_x), test_x, model_train)
         return p_labs
 
@@ -251,6 +251,22 @@ def print_result_testfile(testfile, outputfile, positivemodelfile, negativemodel
     fp_output.close()
 
 
+def truncate_labels(train_file):
+    fp = open(train_file, "r")
+    fp_outfile = open("outputfile.txt", "w+")
+    fp_label = open("labels.txt", "w+")
+    for line in fp:
+        fp_outfile.write(line[:-2] + "\n")
+        fp_label.write(line[-2:])
+    fp.close()
+    fp_label.close()
+    fp_outfile.close()
+
+
+
+
+
+
 
 
 
@@ -259,19 +275,21 @@ def print_result_testfile(testfile, outputfile, positivemodelfile, negativemodel
 	    
 
 if __name__=="__main__":
+    truncate_labels("data/project_articles_train")
     #java_path = "C:/Program Files/Java/jdk1.8.0_65/bin/java.exe"
     #os.environ['JAVAHOME'] = java_path
     #postagdocument("train_negative", "pos_negative")
-    #data = parse_input("data/project_articles_train")
+    #data = parse_input("pos_train_file")
     #data = parse_test_input("data/project_articles_test")
     #get_positive_examples(data, "train_positive")
     #topic_words = load_topic_words("topic_words.ts", 1000)
-    # list_dummy,list_dummy1,topic_words = parse_input_mft("data/project_articles_train")
+    # list_dummy,list_dummy1,topic_words = parse_input_mft("pos_train_file")
     # vocab_dict = get_vocab_dict(topic_words)
+    # print vocab_dict
     # list_label_features = []
     # for tuple_entry in data:
     #     list_label_features.append((tuple_entry[1], generate_count_dict(tuple_entry[0], vocab_dict)))
-    # svm_file = open("file_svm_test.txt", "w+")
+    # svm_file = open("pos_svm_train.txt", "w+")
     # for instance in list_label_features:
     #     svm_file.write(str(instance[0]) + " ")
     #     od = OrderedDict(sorted(instance[1].items()))
@@ -289,22 +307,26 @@ if __name__=="__main__":
     # while(True):
     #     if len(left_set) < 1000:
     #         counter+=1
-    #         total_acc+=train_crossvalidation("file_svm_train_one.txt", left_set)[0]
+    #         total_acc+=train_crossvalidation("file_svm.scale", left_set)[0]
     #         break
     #     else:
     #         counter+=1
     #         current_set = set(random.sample(list(left_set), 1000))
     #         lines_tested.union(current_set)
     #         left_set.difference_update(current_set)
-    #         total_acc+=train_crossvalidation("file_svm_train_one.txt", current_set)[0]
+    #         total_acc+=train_crossvalidation("file_svm.scale", current_set)[0]
     # print total_acc/counter
     #srilm_bigram_models("train_positive","/home1/h/hverma/Project_CIS539/cis530_project/language_models")
     #srilm_bigram_models("train_negative","/home1/h/hverma/Project_CIS539/cis530_project/language_models")
-    list_labels = train_test_model_final("file_svm_train.txt","file_svm_test.txt")
-    fp_result = open("testy.txt", "w+")
-    for label in list_labels:
-        fp_result.write(str(int(label)) + "\n")
-    fp_result.close()
+    # list_labels = train_test_model_final("file_svm_train_one.txt","file_svm_test.txt")
+    # fp_result = open("testy.txt", "w+")
+    # for label in list_labels:
+    #     fp_result.write(str(int(label)) + "\n")
+    # fp_result.close()
+
+
+
+
 
 
 
