@@ -167,16 +167,11 @@ def train_crossvalidation(train_datafile, testlinenos):
     p_labs, p_acc, p_vals = train_test_model("svm_train.txt","svm_test.txt")
     print p_acc
 
-
-def postagstring(inputtotag, st):
-    arrayrepresentation = word_tokenize(inputtotag)
-    posarrayform = st.tag(arrayrepresentation)
-    return posarrayform
-
 def writetodoc(outfile, posarray, intex):
-    trueposarray = [wordpair[1] for wordpair in posarray]
-    for pos in trueposarray:
-        outfile.write(pos)
+    for pospair in posarray:
+        outfile.write(posarray[0])
+        outfile.write("/")
+        outfile.write(posarray[1])
         outfile.write(" ")
     if intex > -1:
         outfile.write('\t ' + intex)
@@ -190,7 +185,9 @@ def postagdocument(inputdocument, outfile):
     f.close()
     for i in range (0, len(arrayofexcerpts)):
         # temp = arrayofexcerpts[i].rsplit('\t',1)
-        posarray = postagstring(arrayofexcerpts[i].decode('utf8'), st)
+        stringtodecode = (arrayofexcerpts[i].decode('utf8')
+        arrayrepresentation = word_tokenize(stringtodecode)    
+        posarray = st.tag(arrayrepresentation)
         # print posarray[0][1]
         # temp.append("")
         # temp.append("")
